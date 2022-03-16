@@ -141,9 +141,6 @@
   <ItemGroup>
     <ClCompile Include="GCJ2021_Reversort.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="GCJ2021_Reversort.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

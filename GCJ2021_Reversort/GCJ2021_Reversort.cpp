@@ -1,66 +1,72 @@
-// GCJ2021_Reversort.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+﻿/* Google Codejam 2021 Qualifier Reversort
+Problem
+Note: The main parts of the statements of the problems "Reversort" and "Reversort Engineering" are identical, except for the last paragraph. The problems can otherwise be solved independently.
 
+Reversort is an algorithm to sort a list of distinct integers in increasing order. The algorithm is based on the "Reverse" operation. Each application of this operation reverses the order of some contiguous part of the list.
+
+The pseudocode of the algorithm is the following:
+
+Reversort(L):
+  for i := 1 to length(L) - 1
+    j := position with the minimum value in L between i and length(L), inclusive
+    Reverse(L[i..j])
+After i−1 iterations, the positions 1,2,…,i−1 of the list contain the i−1 smallest elements of L, in increasing order. During the i-th iteration, the process reverses the sublist going from the i-th position to the current position of the i-th minimum element. That makes the i-th minimum element end up in the i-th position.
+
+For example, for a list with 4 elements, the algorithm would perform 3 iterations. Here is how it would process L=[4,2,1,3]:
+
+i=1, j=3⟶L=[1,2,4,3]
+i=2, j=2⟶L=[1,2,4,3]
+i=3, j=4⟶L=[1,2,3,4]
+The most expensive part of executing the algorithm on our architecture is the Reverse operation. Therefore, our measure for the cost of each iteration is simply the length of the sublist passed to Reverse, that is, the value j−i+1. The cost of the whole algorithm is the sum of the costs of each iteration.
+
+In the example above, the iterations cost 3, 1, and 2, in that order, for a total of 6.
+
+Given the initial list, compute the cost of executing Reversort on it.
+
+Input
+The first line of the input gives the number of test cases, T. T test cases follow. Each test case consists of 2 lines. The first line contains a single integer N, representing the number of elements in the input list. The second line contains N distinct integers L1, L2, ..., LN, representing the elements of the input list L, in order.
+
+Output
+For each test case, output one line containing Case #x: y, where x is the test case number (starting from 1) and y is the total cost of executing Reversort on the list given as input.
+
+Limits
+Time limit: 10 seconds.
+Memory limit: 1 GB.
+Test Set 1 (Visible Verdict)
+1≤T≤100.
+2≤N≤100.
+1≤Li≤N, for all i.
+Li≠Lj, for all i≠j.*/
 //#define DEBUG
 
-#include "GCJ2021_Reversort.hpp"
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <cstddef>
+
+void SwapInt(int* int1, int* int2);
+unsigned int GetIndexOfMin(const int* array, unsigned int size);
+void Randomize(int* array, unsigned int size, unsigned int repeats = 5);
+void Reverse(int* array, unsigned int size);
+void PrintArray(const int* array, unsigned int size);
+unsigned int ReverSort(int* array, unsigned int size);
 
 int main()
-{
-    std::ifstream input;
-    std::ofstream output;
-    //myFile.open("sample_ts1_input.txt");
-    input.open("ts1_input.txt"); 
-    output.open("ts1_myoutput.txt");
-    std::string line;
-    
-    if (!input.is_open() || !output.is_open())
-    {
-        std::cout << "file not found :(\n";
-        return 1;
-    }
-
-    getline (input, line);
-    unsigned int T = std::stoi(line); //number of tests
+{    
+    unsigned int T;
+    std::cin >> T;
 
     static const unsigned int Nmax = 100;
     unsigned int N = 0;
     int L[Nmax] = {};
     unsigned int cost = 0;
-    for (unsigned int i = 0; i < T; i++)
+    for (unsigned int i = 1; i <= T; i++)
     {
-        getline(input, line); // gather number of ints in this test
-        N = std::stoi(line);        
-        getline(input, line); // gather int values in this test
-        splitString(line, ' ', [&L](const std::string& s, std::size_t from, std::size_t to, unsigned int index) {
-            L[index] = std::stoi(s.substr(from, to - from));
-            });
+        std::cin >> N;        
+        for (int j = 0; j < N; j++)
+        {
+            std::cin >> L[j];
+        }        
                         
-        output << "Cost #" << i + 1 << ": " << ReverSort(L, N) << "\n";
+        std::cout << "Case #" << i << ": " << ReverSort(L, N) << "\n";
     }         
-
-    input.close();
-    output.close();
-}
-
-template<typename StringFunction>
-void splitString(const std::string& str, char delimiter, StringFunction f) {
-    std::size_t from = 0;
-    unsigned int index = 0;
-    for (std::size_t i = 0; i < str.size(); ++i) {
-        if (str[i] == delimiter) {
-            f(str, from, i, index);
-            from = i + 1;
-            index++;
-        }
-    }
-    if (from <= str.size())
-        f(str, from, str.size(), index);
 }
 
 /**
